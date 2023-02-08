@@ -1,5 +1,47 @@
+//var APIKey = process.env.WEATHER_API_KEY;
+var APIKey = "f07bf58d218143ec8ee0c51754d37a7c";
 
-var APIKey = process.env.WEATHER_API_KEY;
+var cityArr= [];
+var inStore= false;
+
+   function checkCities(){
+
+
+    if (localStorage.length >0)
+    {
+
+      for ( var i = 0, len = localStorage.length; i < len; ++i ) {
+
+        var key1 =localStorage.key(i);
+        if (key1.substring(0,7)== "wcities") {
+          
+          keyVal = localStorage.getItem( key1 );
+        //  console.log("ssssssssss"+ key1 + "------" + keyVal);
+
+          cityArr.push(keyVal);
+          //console.log("EEEEEEEEEEEE"+cityArr.length);
+          //console.log( keyVal );
+        }
+
+      }
+    }
+
+    for (i=0; i<cityArr.length; i++) {
+      //$('#weather-list').append('<li class="list-group-item">'+ cityArr[i] +'</li>');
+      let selCity =  (cityArr[i] +"").trim();
+      //alert(selCity.indexOf(' '));
+      selCity.replace(" ", "--");
+      console.log(":"+selCity);
+      cityURL="javascript:searchCity('"+ selCity +"')";
+      //alert(cityURL);
+      //$('#weather-list').append('<li class="list-group-item"><a href="javascript:searchCity("'+cityArr[i].trim()+'")>'+  cityArr[i].trim() +'</href></li>');
+      
+      $('#weather-list').append("<li class='list-group-item'><a href=" + cityURL + ">"+  selCity +"</href></li>");
+      }
+  
+
+  }
+
 
 $(document).ready(function() {
   $("#currentDay").html((moment().format("dddd, MMMM Do")));
@@ -7,12 +49,6 @@ $(document).ready(function() {
 
   var currentHour = moment().format("H");
   var currentDateStr = moment().format("DDMMYYYY");
-  
-  //alert(typeof currentDate);
-
-  // For testing ..
-  //if (currentHour > 17) currentHour = 16;
-  //alert(typeof currentHour);
 
   if (weather == null) {
 
@@ -20,72 +56,95 @@ $(document).ready(function() {
     $("#forecast").hide();
   }  
 
-
-
+  checkCities();
 });
 
 var weather;
 
 $("#search-button").click(function(){
-var txtVal = $('#search-input').val();
-//alert(txtVal);
-if (txtVal !=null)
-{
+  var txtVal = $('#search-input').val().trim();
+ // console.log("sssssssssssssssssss"+cityArr.length);
+  if ((txtVal !=null) && (txtVal != ""))
+  {
+
+    for ( var i = 0; i< cityArr.length;  i++ ) {
+     // alert(txtVal.toLowerCase() + "----"+ cityArr[i].toLowerCase());
+      if (txtVal.toLowerCase()== cityArr[i].toLowerCase()) {
+       inStore =true;
+       break;
+    }
+      else
+        inStore =false;
+
+    }
+    //console.log("xxxxxxxxxxxx"+cityArr.length);
+
+  // alert(inStore);
+    if (inStore == false) {
+    //cityArr.push(txtVal);
+    //console.log(cityArr.len);
+      var key;
+
+      if ((cityArr == null) || (cityArr.length ==0)) {
+        var key="wcities1"
+      } else {
+        var key="wcities"+ (cityArr.length+1) +"";
+
+      }
+      localStorage.setItem(key,txtVal)
+      cityArr.push(txtVal);
+      inStore =true;
+      //alert(inStore);
+      var selCity =  txtVal.trim();
+      console.log(":"+selCity);
+      cityURL="javascript:searchCity('"+ selCity +"')";
+      //$('#weather-list').append('<li class="list-group-item"><a href=searchCity("'+ txtVal +'")>'+ txtVal +'</href></li>');
+      $('#weather-list').append("<li class='list-group-item'><a href=" + cityURL + ">"+  selCity +"</href></li>");
+    }
 
 
-localStorage.setItem("inputtext", txtVal);
+    //localStorage.setItem("inputcities", cityArr);
+/*
+    for (i=0; i<cityArr.length; i++) {
+    $('#weather-list').append('<li class="list-group-item">'+ cityArr[i] +'</li>');
+    }
+*/
 
-$('#weather-list').append('<li class="list-group-item">'+ txtVal +'</li>');
+    getCityWeather(txtVal);
+    getWeatherDetails(txtVal);
 
-getCityWeather(txtVal);
-
-getWeatherDetails(txtVal);
-
-//console.log(weatherTxt);
-$("#citytoday").show();
-$("#forecast").show();
-//var placeHead= cityWeather.cityName + " ( " + cityWeather.dt + " ) ";
-//alert(placeHead);
-//$("#city").html(placeHead);
-
-
-//alert(localStorage.getItem("inputtext"));
-return false;
-}
+    $("#citytoday").show();
+    $("#forecast").show();
+    return false;
+  }
 
 });
 
-//-----------------------------
+function searchCity(city1){
+  getCityWeather(city1);
+  getWeatherDetails(city1);
+
+  $("#citytoday").show();
+  $("#forecast").show();
+  return false;
+}
+
 function getCityWeather(city) {
 
-  //var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + APIKey;
   var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=metric&appid=" + APIKey;
-  console.log(queryURL);
-
-  //var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=London,UnitedKingdom&appid=" + APIKey;
-
 
   $.ajax({
-    url: queryURL,
-    method: "GET"
+  url: queryURL,
+  method: "GET"
   }).then(function(response) {
-  
-    // Create CODE HERE to Log the queryURL
-    // Create CODE HERE to log the resulting object
-    // Create CODE HERE to calculate the temperature (converted from Kelvin)
-    // Create CODE HERE to transfer content to HTML
-    // Hint: To convert from Kelvin to Celsius: C = K - 273.15
-    // Create CODE HERE to dump the temperature content into HTML
 
-    
+
     var cityName=response.name+"";
     var currDate=response.dt+"";
     var temp=response.main.temp+"";
     var wind=response.wind.speed+"";
     var humid=response.main.humidity+"";
     var icon=response.weather[0].icon+"";
-
-
 
     weather = {
       name: cityName,
@@ -95,25 +154,16 @@ function getCityWeather(city) {
       humidity: humid,
       icon: icon
     };
-  
-  var currDate = moment().format("DD/MM/YYYY");
-  var iconURL= "https://openweathermap.org/img/wn/" + icon +"@2x.png"
-  //alert(iconURL);
+
+    var currDate = moment().format("DD/MM/YYYY");
+    var iconURL= "https://openweathermap.org/img/wn/" + icon +"@2x.png"
     var placeHead= weather.name + " ( " + currDate + " ) <img src='" + iconURL + "'>";
-    //alert(placeHead);
     $("#city").html(placeHead);
     $("#temp").html( "Temp : " + weather.temp + " °C");
     $("#wind").html( "Wind : " +weather.wind+ " kmph");
     $("#humidity").html("Humidity : " +weather.humidity+ " %");
-
-    
-   // let cityWeather = new Weather( response.name, response.dt, response.main.temp, response.wind.speed, response.main.humidity )
-   //alert(cityWeather);
-   //alert(cityWeather.name);
-    //cityWeather = JSON.parse(weather);
-  //return JSON.stringify(weather);
   });
-  
+
 }
 
 
@@ -125,69 +175,32 @@ function getWeatherDetails(city) {
     url: queryURL,
     method: "GET"
   }).then(function(response) {
-  
-    console.log("XXXXXXXXXXXXXXXXXXXXXXXXX");
-    console.log(response);
-    // Create CODE HERE to Log the queryURL
-    // Create CODE HERE to log the resulting object
-    // Create CODE HERE to calculate the temperature (converted from Kelvin)
-    // Create CODE HERE to transfer content to HTML
-    // Hint: To convert from Kelvin to Celsius: C = K - 273.15
-    // Create CODE HERE to dump the temperature content into HTML
+    var forecast=response.list;
+    var i=4;
+    var divText="";
 
- var forecast=response.list;
- 
- //var myWeather = [];
- var i=4;
+    while (i < forecast.length) {
+      var weather = forecast[i]
+      var currDate=weather.dt_txt+"";
+      var temp=weather.main.temp+"";
+      var wind=weather.wind.speed+"";
+      var humidity=weather.main.humidity+"";
+      var icon=weather.weather[0].icon+"";
 
- var divText="";
- while (i < forecast.length) {
+      var weatherDate = moment(currDate.substring(0,10)).format('DD/MM/YYYY');
+      var iconURL= "https://openweathermap.org/img/wn/" + icon +"@2x.png"
 
-
-
-  var weather = forecast[i]
-  console.log(weather);
-
-  var currDate=weather.dt_txt+"";
-  var temp=weather.main.temp+"";
-  var wind=weather.wind.speed+"";
-  var humidity=weather.main.humidity+"";
-  var icon=weather.weather[0].icon+"";
-
-  var weatherDate = moment(currDate.substring(0,10)).format('DD/MM/YYYY');
-  var iconURL= "https://openweathermap.org/img/wn/" + icon +"@2x.png"
-
-console.log(iconURL);
-
-console.log(temp);
-console.log(wind);
-console.log(humidity);
-/*
-  <div class="col gx-4 p-3 mb-2 bg-dark text-white">
-  <div class="p-3" id="2date">Date : DATE </div>
-  <div class="p-3" id="2icon">iconE </div>
-  <div class="p-3" id="2temp">temp </div>
-  <div class="p-3" id="2wind">wind </div>
-  <div class="p-3" id="2humid">humid </div>
- </div>
- */
-
- divText =  divText + '<div class="col gx-4 p-3 mb-2 bg-dark text-white">';
- divText =  divText + '<div class="p-3">'+  weatherDate + '</div>';
- divText =  divText + '<div class="p-3"><img src="'+ iconURL +'"></icon></div>';
- divText =  divText + '<div class="p-3">' + temp + ' °C </div>';
- divText =  divText + '<div class="p-3">' + wind + ' kmph </div>';
- divText =  divText + '<div class="p-3">'+ humidity +' %</div></div>';
-
-
-
-
-  i=i+8;
+      divText =  divText + '<div class="col gx-4 p-3 mb-2 ">';
+      divText =  divText + '<div class="p-3 bg-dark text-white">'+  weatherDate + '</div>';
+      divText =  divText + '<div class="p-3 bg-dark text-white"><img src="'+ iconURL +'"></icon></div>';
+      divText =  divText + '<div class="p-3 bg-dark text-white">' + temp + ' °C </div>';
+      divText =  divText + '<div class="p-3 bg-dark text-white">' + wind + ' kmph </div>';
+      divText =  divText + '<div class="p-3 bg-dark text-white">'+ humidity +' %</div></div>';
+      i=i+8;
   }
 
   $("#forecast-div").html( divText);
 
-});
+  });
   
-
 }

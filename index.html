@@ -13,7 +13,12 @@
 </head>
 
 <body>
-  <header class="container-fluid text-center text-white bg-dark p-2 weather-header">
+  
+ <!--<header class="container-fluid text-center text-white bg-dark p-2 weather-header">
+ -->
+
+ <header class="container-fluid text-center text-white bg-dark p-2 weather-header" style="background: linear-gradient(to right, #187af2, #021850); height: 60px;">
+
     <h1>Weather Dashboard</h1>
   </header>
 
@@ -27,7 +32,7 @@
         <form id="search-form" class="form">
           <div class="form-inline form-group">
             <div class="d-grid gap-2 d-md-block input-group">
-              <input class="form-input gap-2 weather-search" type="text" id="search-input" placeholder="London"
+              <input class="form-input gap-2 weather-search" type="text" id="search-input" placeholder="London" value="" 
                 aria-labelledby="form-heading" aria-controls="today forecast" />
               <div class="d-grid gap-2 d-md-block input-group-append">
                 <button type="submit" class="btn btn-primary search-button " id="search-button" aria-label="submit search">
@@ -56,7 +61,7 @@
 
 
         </section>
-        <section id="forecast" class="row mt-3" role="region" aria-live="polite">
+        <section id="forecast" class="row gx-5 mt-3" role="region" aria-live="polite">
         
             <div class="container ">
               <h2 id="5day" class="mt-1 h3 form-label">
@@ -64,29 +69,6 @@
               </h2>
 
               <div id="forecast-div"  class="row align-items-center px-4">
-                 <div class="col gx-4 p-3 mb-2 bg-dark text-white">
-                  <div class="p-3" id="2date">Date : DATE </div>
-                  <div class="p-3" id="2icon">iconE </div>
-                  <div class="p-3" id="2temp">temp </div>
-                  <div class="p-3" id="2wind">wind </div>
-                  <div class="p-3" id="2humid">humid </div>
-                 </div>
-                <div class="col gx-4 p-3 mb-2 bg-dark text-white">
-                 <div class="p-3" id="2date">Date : DATE </div>
-                 <div class="p-3" id="2icon">iconE </div>
-                 <div class="p-3" id="2temp">temp </div>
-                 <div class="p-3" id="2wind">wind </div>
-                 <div class="p-3" id="2humid">humid </div>
-                </div>
-                <div class="col">
-                  One of three columns
-                </div>
-                <div class="col">
-                  One of three columns
-                </div>
-                <div class="col">
-                  One of three columns
-                </div>
               </div>
 
               <!--
