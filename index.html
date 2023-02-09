@@ -26,28 +26,31 @@
   <div class="container-fluid" style="max-width: 1400px">
     <div class="row">
       <aside class="col-lg-3 pb-3">
+        <form id="search-form" class="form">
+
         <h2 id="form-heading" class="mt-1 h3 form-label">
           Search for a City:
         </h2>
-        <form id="search-form" class="form">
+
           <div class="form-inline form-group">
-            <div class="d-grid gap-2 d-md-block input-group">
-              <input class="form-input gap-2 weather-search" type="text" id="search-input" placeholder="London" value="" 
+
+            <div class="d-grid gap-2 d-md-block input-group w-80">
+              <input class="form-input gap-2 weather-search rounded-lg w-100" type="text" id="search-input" placeholder="London" value="" 
                 aria-labelledby="form-heading" aria-controls="today forecast" />
-              <div class="d-grid gap-2 d-md-block input-group-append">
-                <button type="submit" class="btn btn-primary search-button " id="search-button" aria-label="submit search">
-                  Search
+              <div class="d-grid gap-2 d-md-block input-group-append w-100">
+                <button type="submit" class="btn btn-primary search-button btn-sm btn-block  rounded-lg" id="search-button" aria-label="submit search">
+                  Search 
                 </button>
                 <hr class="hr weather-hr" />
               </div>
+
+            <div class="list-group p-2 w-100" id="history">
+              <ul id="weather-list" class="list-group">
+              </ul>
             </div>
-          </div>
-        </form>
-        <div class="list-group" id="history">
-          <ul id="weather-list" class="list-group">
-            <!-- <li class="list-group-item">An item</li>  -->
-          </ul>
+          </div>  
         </div>
+        </form>
       </aside>
 
       <div class="col-lg-9 pb-3">
@@ -70,31 +73,8 @@
 
               <div id="forecast-div"  class="row align-items-center px-4">
               </div>
-
-              <!--
-              <div class="row">
-                <div class="col">
-                  1 of 3
-                </div>
-                <div class="col">
-                  2 of 3
-                </div>
-                <div class="col">
-                  3 of 3
-                </div>
-                <div class="col">
-                  2 of 3
-                </div>
-                <div class="col">
-                  3 of 3
-                </div>                
-              </div> 
-            -->
               
             </div>
-
-
-
 
         </section>
       </div>

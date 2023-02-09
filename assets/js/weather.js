@@ -1,88 +1,82 @@
-//var APIKey = process.env.WEATHER_API_KEY;
-var APIKey = "f07bf58d218143ec8ee0c51754d37a7c";
+// OPenWeatherMap
+var APPID = "f07bf58d218143ec8ee0c51754d37a7c";
 
+// Array of cities
 var cityArr= [];
+
+// Flag to check if City is already in search history
 var inStore= false;
 
-   function checkCities(){
+// variable to store weather details
+var weather;
 
-
-    if (localStorage.length >0)
-    {
-
-      for ( var i = 0, len = localStorage.length; i < len; ++i ) {
-
-        var key1 =localStorage.key(i);
-        if (key1.substring(0,7)== "wcities") {
-          
-          keyVal = localStorage.getItem( key1 );
-        //  console.log("ssssssssss"+ key1 + "------" + keyVal);
-
-          cityArr.push(keyVal);
-          //console.log("EEEEEEEEEEEE"+cityArr.length);
-          //console.log( keyVal );
-        }
-
-      }
-    }
-
-    for (i=0; i<cityArr.length; i++) {
-      //$('#weather-list').append('<li class="list-group-item">'+ cityArr[i] +'</li>');
-      let selCity =  (cityArr[i] +"").trim();
-      //alert(selCity.indexOf(' '));
-      selCity.replace(" ", "--");
-      console.log(":"+selCity);
-      cityURL="javascript:searchCity('"+ selCity +"')";
-      //alert(cityURL);
-      //$('#weather-list').append('<li class="list-group-item"><a href="javascript:searchCity("'+cityArr[i].trim()+'")>'+  cityArr[i].trim() +'</href></li>');
-      
-      $('#weather-list').append("<li class='list-group-item'><a href=" + cityURL + ">"+  selCity +"</href></li>");
-      }
-  
-
-  }
-
-
+// Function to load City list from Local history on page load
 $(document).ready(function() {
-  $("#currentDay").html((moment().format("dddd, MMMM Do")));
-  $("#currentDate").val((moment().format("DDMMYYYY")));
-
-  var currentHour = moment().format("H");
-  var currentDateStr = moment().format("DDMMYYYY");
-
+  // If no data is there then hide the weather divs
   if (weather == null) {
-
     $("#citytoday").hide();
     $("#forecast").hide();
   }  
 
+  // Get all the cities searched earlier from Local storage
   checkCities();
 });
 
-var weather;
 
+
+
+ // Get all the cities searched earlier from Local storage
+function checkCities(){
+  // Check if localstorage is not empty, then find cities stored in it
+  if (localStorage.length >0)
+  {
+    // Get all objects from localstorage having key as "wcities" and add to an array. This array will later appended with new cities searched
+    for ( var i = 0, len = localStorage.length; i < len; ++i ) {
+      var key1 =localStorage.key(i);
+      if (key1.substring(0,7)== "wcities") {
+        
+        keyVal = localStorage.getItem( key1 );
+        cityArr.push(keyVal);
+      }
+    }
+  }
+  // Display all the cities added to cityArr to history DIV
+  //IF there are spaces in city name replace that with "%20" to avoid link issues
+  for (i=0; i<cityArr.length; i++) {
+    let selCity =  (cityArr[i] +"").trim();
+    var x = selCity.indexOf(' ');
+    if (x> -1) {
+      let arr1 = selCity.split(" ");
+      let selCity1 =arr1[0] +"%20" +arr1[1];
+    } else {
+      selCity1=selCity;
+    }
+
+    // Building a string for the function, since having issues directly adding in tags
+    cityURL="javascript:searchCity('"+ selCity1 +"')";
+    // $('#weather-list').append("<li class='list-group-item list-group-item-action list-group-item-dark mt-2 p-0 border-1 rounded-lg w-100 text-dark'><a href=" + cityURL + ">"+  selCity +"</href></li>");
+    $('#weather-list').append("<li class='list-group-item list-group-item-action list-group-item-dark mt-2 p-0 border-1 rounded-lg w-100' onmousedown="+ cityURL +">"+  selCity +"</li>");
+  }
+}
+
+
+// JQuery function for search button click
 $("#search-button").click(function(){
   var txtVal = $('#search-input').val().trim();
- // console.log("sssssssssssssssssss"+cityArr.length);
   if ((txtVal !=null) && (txtVal != ""))
   {
 
+    // If new city searched is already in the list enable flag
     for ( var i = 0; i< cityArr.length;  i++ ) {
-     // alert(txtVal.toLowerCase() + "----"+ cityArr[i].toLowerCase());
       if (txtVal.toLowerCase()== cityArr[i].toLowerCase()) {
        inStore =true;
        break;
     }
       else
         inStore =false;
-
     }
-    //console.log("xxxxxxxxxxxx"+cityArr.length);
-
-  // alert(inStore);
+    // If flag enabled, city is already in list, so dont add again
     if (inStore == false) {
-    //cityArr.push(txtVal);
-    //console.log(cityArr.len);
       var key;
 
       if ((cityArr == null) || (cityArr.length ==0)) {
@@ -98,21 +92,16 @@ $("#search-button").click(function(){
       var selCity =  txtVal.trim();
       console.log(":"+selCity);
       cityURL="javascript:searchCity('"+ selCity +"')";
-      //$('#weather-list').append('<li class="list-group-item"><a href=searchCity("'+ txtVal +'")>'+ txtVal +'</href></li>');
-      $('#weather-list').append("<li class='list-group-item'><a href=" + cityURL + ">"+  selCity +"</href></li>");
+     // $('#weather-list').append("<li class='list-group-item p-3 rounded-lg'><a href=" + cityURL + ">"+  selCity +"</href></li>");
+      $('#weather-list').append("<li class='list-group-item list-group-item-action list-group-item-dark mt-2 p-0 border-1 rounded-lg w-100' onmousedown="+ cityURL +">"+  selCity +"</li>");
+     
     }
-
-
-    //localStorage.setItem("inputcities", cityArr);
-/*
-    for (i=0; i<cityArr.length; i++) {
-    $('#weather-list').append('<li class="list-group-item">'+ cityArr[i] +'</li>');
-    }
-*/
-
+    // Invoke function to get the City weather details 
     getCityWeather(txtVal);
+    // Get forecase details
     getWeatherDetails(txtVal);
 
+    // Display the DIVs for weather details and forecast
     $("#citytoday").show();
     $("#forecast").show();
     return false;
@@ -120,6 +109,7 @@ $("#search-button").click(function(){
 
 });
 
+// Function to search weather details when city link is clicked from history
 function searchCity(city1){
   getCityWeather(city1);
   getWeatherDetails(city1);
@@ -129,15 +119,15 @@ function searchCity(city1){
   return false;
 }
 
+// Function to invoke Weather API and get weather details
 function getCityWeather(city) {
 
-  var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=metric&appid=" + APIKey;
+  var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + city + "&units=metric&appid=" + APPID;
 
   $.ajax({
   url: queryURL,
   method: "GET"
   }).then(function(response) {
-
 
     var cityName=response.name+"";
     var currDate=response.dt+"";
@@ -155,6 +145,7 @@ function getCityWeather(city) {
       icon: icon
     };
 
+    // Display weather details
     var currDate = moment().format("DD/MM/YYYY");
     var iconURL= "https://openweathermap.org/img/wn/" + icon +"@2x.png"
     var placeHead= weather.name + " ( " + currDate + " ) <img src='" + iconURL + "'>";
@@ -166,10 +157,10 @@ function getCityWeather(city) {
 
 }
 
-
+// Get forecast details for the city
 function getWeatherDetails(city) {
 
-  var queryURL = "https://api.openweathermap.org/data/2.5/forecast?q="+ city + "&units=metric&appid=" + APIKey;
+  var queryURL = "https://api.openweathermap.org/data/2.5/forecast?q="+ city + "&units=metric&appid=" + APPID;
 
   $.ajax({
     url: queryURL,
@@ -190,6 +181,7 @@ function getWeatherDetails(city) {
       var weatherDate = moment(currDate.substring(0,10)).format('DD/MM/YYYY');
       var iconURL= "https://openweathermap.org/img/wn/" + icon +"@2x.png"
 
+      // Display forecast details
       divText =  divText + '<div class="col gx-4 p-3 mb-2 ">';
       divText =  divText + '<div class="p-3 bg-dark text-white">'+  weatherDate + '</div>';
       divText =  divText + '<div class="p-3 bg-dark text-white"><img src="'+ iconURL +'"></icon></div>';
