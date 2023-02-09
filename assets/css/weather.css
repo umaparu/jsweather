@@ -19,3 +19,7 @@ body {
 .hide {
   display: none;
 }
+
+a:link {
+  color: black;
+}
